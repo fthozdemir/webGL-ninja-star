@@ -1,0 +1,117 @@
+<!--
+    author: Fatih Özdemir
+    Final Project Gazi University -2021 
+    /Common/ files downloaded from https://github.com/esangel/WebGL/tree/master/Common 
+-->
+<!DOCTYPE html>
+<html>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+    attribute vec2 vPosition;
+    attribute vec4 vColor;
+    varying vec4 fColor;
+
+    uniform float _rotateTheta;
+    uniform float _scale;
+    uniform float _spiralTheta;
+    uniform float _translation_comp;
+    
+    void main()
+    {
+        float rotate_sin = sin( _rotateTheta );
+        float rotate_cos = cos( _rotateTheta );
+        
+        float spiralAngle = radians(_spiralTheta);
+        float spiralAngle_cos = cos(spiralAngle);
+        float spiralAngle_sin = sin(spiralAngle);
+
+        mat4 spiralMat = mat4(
+            1.0, 0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            _translation_comp * spiralAngle_sin, _translation_comp * -spiralAngle_cos, 0.0, 1.0);
+
+
+        mat4 scaleMat = mat4(
+            _scale, 0.0, 0.0, 0.0,
+             0.0, _scale, 0.0, 0.0,
+            0.0, 0.0, _scale, 0.0,
+             0.0, 0.0, 0.0, 1.0);
+
+
+        mat4 rotateMat = mat4(
+            rotate_cos, rotate_sin, 0.0, 0.0,
+            -rotate_sin, rotate_cos, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0);
+
+        fColor=vColor;
+        gl_Position=spiralMat*scaleMat*rotateMat*vec4(vPosition,0.0,1.0);
+    }
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+varying vec4 fColor;
+
+void main()
+{
+gl_FragColor = fColor;
+}
+</script>
+
+<style>
+    .centered {
+        margin: auto;
+        margin-top: 30px;
+        display: block;
+    }
+
+    .buttonGroup {
+        text-align: center;
+        margin: 20px;
+    }
+</style>
+
+<script type="text/javascript" src="Common/webgl-utils.js"></script>
+<script type="text/javascript" src="Common/initShaders.js"></script>
+<script type="text/javascript" src="Common/MV.js"></script>
+<script type="text/javascript" src="main.js"></script>
+<script type="text/javascript" src="Common/UIHandler.js"></script>
+
+<body>
+    <canvas style="align-items: center;" class="centered" id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+
+    <div class="buttonGroup">
+        <div>
+            <h2> Rotate</h2>
+        </div>
+        <p> Rotate Speed = <output id="rotateSpeedText">1</output></p>
+        <button id="buttonRotate"><b style="color:green">START </b>Rotate</button>
+        <button id="speedUpRotate"> Speed Up &#708</button>
+        <button id="speedDownRotate">Speed Down &#709</button>
+    </div>
+
+    <div class="buttonGroup">
+        <div>
+            <h2>Shrink&Grow</h2>
+        </div>
+        <button id="buttonSNG"><b style="color:green">START </b>S&G</button>
+    </div>
+
+    <div class="buttonGroup">
+        <div>
+            <h2>Spiral</h2>
+        </div>
+        <p> Spiral Speed = <output id="spiralSpeedText">5</output></p>
+        <button id="buttonSpiral"><b style="color:green">START </b>Spiral</button>
+        <button id="speedUpSpiral"> Speed Up &#708</button>
+        <button id="speedDownSpiral">Speed Down &#709</button>
+    </div>
+
+</body>
+
+</html>
